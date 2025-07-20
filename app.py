@@ -1,9 +1,9 @@
 import os
+from datetime import datetime
+import base64
 from flask import Flask, render_template, request, redirect, url_for
 import requests
 from dotenv import load_dotenv
-from datetime import datetime
-import base64
 
 load_dotenv()
 
@@ -11,6 +11,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def index():
+    """pass"""
     alert_visible = request.args.get("alertVisible") == "true"
     confirmation = request.args.get("message", "")
     initiated_success = request.args.get("initiatedSuccess")
@@ -24,18 +25,21 @@ def index():
     )
 
 def get_access_token():
+    """pass"""
     auth = f"{os.getenv('MPESA_CONSUMER_KEY')}:{os.getenv('MPESA_CONSUMER_SECRET')}"
     auth_bytes = base64.b64encode(auth.encode()).decode()
     headers = {"Authorization": f"Basic {auth_bytes}"}
     response = requests.get(
         "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
-        headers=headers
+        headers=headers,
+        timeout=10
     )
     response.raise_for_status()
     return response.json()["access_token"]
 
 @app.route("/api/pay", methods=["POST"])
 def pay():
+    """pass"""
     phone_no = request.form["phone"][1:]
     amount = request.form["amount"]
     phone = f"254{phone_no}"
@@ -65,7 +69,8 @@ def pay():
         requests.post(
             "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
             json=request_data,
-            headers=headers
+            headers=headers,
+            timeout=10
         )
         return redirect(url_for(
             "index",
@@ -73,7 +78,7 @@ def pay():
             message="Payment initiated, check your phone to complete.",
             initiatedSuccess="done"
         ))
-    except Exception as error:
+    except requests.exceptions.RequestException as error:
         print("Error in STK Push:", error)
         return redirect(url_for(
             "index",
@@ -84,6 +89,7 @@ def pay():
 
 @app.route("/callBack", methods=["POST"])
 def callback():
+    """pass"""
     callback_data = request.get_json()
     try:
         if callback_data["Body"]["stkCallback"]["ResultCode"] == 0:
@@ -102,7 +108,7 @@ def callback():
                 message="Payment unsuccessful. Please try again.",
                 payedSuccess="failed"
             ))
-    except Exception as e:
+    except (KeyError, TypeError) as e:
         print("Callback error:", e)
     return "Callback received", 200
 

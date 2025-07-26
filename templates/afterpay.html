@@ -1,0 +1,22 @@
+{% extends 'index.html'%}
+{% block title%}Payment confirmation{% endblock%}
+{% block container%}
+<div class="hero min-h-screen bg-base-200">
+    <div class="hero-content flex flex-col items-center text-center">
+        <h1 class="text-5xl font-bold mb-4">Payment Confirmation</h1>
+        <div class="card w-full max-w-xl p-5 shadow-2xl bg-blue-100">
+            <div class="flex justify-center items-center h-24">
+                {% if status == "pending" %}
+                    <span class="loading loading-bars loading-2xl"></span>
+                {% elif status == "success" %}
+                    <span class="text-green-600 text-3xl font-bold">&#10003;</span>
+                {% elif status == "failed" %}
+                    <span class="text-red-600 text-3xl font-bold">&#10007;</span>
+                {% endif %}
+            </div>
+            <div class="card-body space-y-4 text-black">
+                <p class="text-lg">{{ message }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock%}

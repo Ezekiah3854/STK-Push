@@ -5,36 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.2/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 
 <body>
+    {% block container%}
     <div class="hero min-h-screen bg-base-200">
         <div class="hero-content flex flex-col items-center text-center">
-            <div>
-                {% if alertVisible %}
-                {% if initiatedSuccess == "done" or payedSuccess == "done" %}
-                <div id="alert-success" class="alert alert-success" role="alert">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span>{{ confirmation }}</span>
-                </div>
-                {% elif initiatedSuccess == "failed" or payedSuccess == "failed" %}
-                <div id="alert-error" class="alert alert-error" role="alert">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span>{{ confirmation }}</span>
-                </div>
-                {% endif %}
-                {% endif %}
-            </div>
+            <h1 class="text-5xl font-bold mb-4">Pay with M-Pesa</h1>
             <img src="{{ url_for('static', filename='img/pay.svg') }}" alt="illustration"
                 class="w-40 md:w-52 lg:w-60 mb-4">
             <div class="card w-full max-w-xl p-5 shadow-2xl bg-base-100">
@@ -44,7 +23,7 @@
                             <span class="label-text">Phone Number</span>
                         </label>
                         <input id="phoneNo" type="text" placeholder="07xxxxxxx" class="input input-bordered"
-                            name="phone" required />
+                            name="phone_no" required />
                     </div>
                     <div class="form-control">
                         <label class="label">
@@ -59,7 +38,9 @@
             </div>
         </div>
     </div>
+    {% endblock%}
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
 </body>
 
 </html>

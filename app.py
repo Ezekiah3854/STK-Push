@@ -78,7 +78,9 @@ def afterpay():
 
 @app.route('/callback', methods=["POST"])
 def callback():
+    """pass"""
     data = request.get_json()
+    print(data)  # For debugging purposes
     try:
         result_code = data["Body"]["stkCallback"]["ResultCode"]
         result_desc = data["Body"]["stkCallback"]["ResultDesc"]
@@ -92,6 +94,13 @@ def callback():
         session["mpesa_message"] = "Error processing payment callback."
         session["mpesa_status"] = "failed"
     return "OK", 200
+
+@app.route('/payment_status')
+def payment_status():
+    """pass"""
+    status = session.get("mpesa_status", "pending")
+    message = session.get("mpesa_message", "Waiting for payment confirmation...")
+    return {"status": status, "message": message}
 
 if __name__ == '__main__':
     app.run(debug=True)

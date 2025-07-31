@@ -15,14 +15,18 @@
                     <p id="status-message" class="text-lg">{{ message }}</p>
                 </div>
                 {% elif status == "success" %}
-                <span id="status-icon" class="text-green-600 text-3xl font-bold">&#10003;</span>
+                <div id="status-icon" >
+                    <span class="text-green-600 text-3xl font-bold">&#10003;</span>
+                </div>
                 <div class="card-body space-y-4 text-black">
                     <p id="status-message" class="text-lg">{{ message }}</p>
                 </div>
                 <div id="next-transaction"></div>
 
                 {% elif status == "failed" %}
-                <span id="status-icon" class="text-red-600 text-3xl font-bold">&#10007;</span>
+                <div  id="status-icon">
+                    <span class="text-red-600 text-3xl font-bold">&#10007;</span>
+                </div>
                 <div class="card-body space-y-4 text-black">
                     <p id="status-message" class="text-lg">{{ message }}</p>
                 </div>
@@ -51,7 +55,7 @@
                     } else if (currentStatus === "success") {
                         iconDiv.innerHTML = '<span class="text-green-600 text-3xl font-bold">&#10003;</span>';
                         msgP.textContent = data.message;
-                        nextTransactionDiv.innerHTML = '<button class="btn btn-soft btn-success">Start a new transaction</button>;'
+                        nextTransactionDiv.innerHTML = '<button class="btn btn-soft btn-success">Start a new transaction</button>'
                     } else if (currentStatus === "failed") {
                         iconDiv.innerHTML = '<span class="text-red-600 text-3xl font-bold">&#10007;</span>';
                         msgP.textContent = data.message;

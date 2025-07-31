@@ -19,15 +19,13 @@
                 <div class="card-body space-y-4 text-black">
                     <p id="status-message" class="text-lg">{{ message }}</p>
                 </div>
-                <div>
-                <button id="next-transaction" class="btn btn-soft btn-success"></button>
+                <div id="next-transaction"></div>
 
                 {% elif status == "failed" %}
                 <span id="status-icon" class="text-red-600 text-3xl font-bold">&#10007;</span>
                 <div class="card-body space-y-4 text-black">
                     <p id="status-message" class="text-lg">{{ message }}</p>
                 </div>
-                <div>
                 <div id="retry-transaction-link"></div>
                 {% endif %}
             </div>
@@ -45,19 +43,19 @@
                     currentStatus = data.status;
                     const iconDiv = document.getElementById("status-icon");
                     const msgP = document.getElementById("status-message");
-                    const next_transaction = document.getElementById("next-transaction");
-                    const retryLink = document.getElementById("retry-transaction-link");
+                    const nextTransactionDiv = document.getElementById("next-transaction");
+                    const retryLinkDiv = document.getElementById("retry-transaction-link");
                     if (currentStatus === "pending") {
                         iconDiv.innerHTML = '<span class="loading loading-bars loading-2xl"></span>';
                         msgP.textContent = data.message;
                     } else if (currentStatus === "success") {
                         iconDiv.innerHTML = '<span class="text-green-600 text-3xl font-bold">&#10003;</span>';
                         msgP.textContent = data.message;
-                        next_transaction.textContent = "Start another transaction";
+                        nextTransactionDiv.innerHTML = <button class="btn btn-soft btn-success">Start a new transaction</button>;
                     } else if (currentStatus === "failed") {
                         iconDiv.innerHTML = '<span class="text-red-600 text-3xl font-bold">&#10007;</span>';
                         msgP.textContent = data.message;
-                        retryLink.innerHTML = '<a href="/" style="color: blue; text-decoration: underline;">Retry the transaction</a>'
+                        retryLinkDiv.innerHTML = '<a href="/" style="color: blue; text-decoration: underline;">Retry the transaction</a>'
                     }
                 }
                 if (currentStatus === "pending") {

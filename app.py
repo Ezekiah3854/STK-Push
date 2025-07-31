@@ -14,6 +14,8 @@ app.config['SESSION_PARMANENT'] = False
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
+transactions = {}
+
 def get_access_token():
     """pass"""
     consumer_key = os.getenv("CONSUMER_KEY")
@@ -68,40 +70,45 @@ def pay():
     resp = initiate_payment(phone_no, amount)
     print(resp)
 
-    session["mpesa_message"] = "Payment initiated. Check your phone."
-    session["mpesa_status"] = "pending"
-    return render_template("afterpay.html", message=session["mpesa_message"], status=session["mpesa_status"])
+    checkout_id = resp.get("CheckoutRequestID")
 
-@app.route('/afterpay')
-def afterpay():
-    """pass"""
-    return render_template('afterpay.html')
+    if checkout_id:
+        transactions[checkout_id] = {"status": "pending", "message": "Waiting for the payment results."}
+        session["checkout_id"] = checkout_id
+
+    return render_template("afterpay.html", status="pending", message="Payment initiated, check your phone.")
 
 @app.route('/callback', methods=["POST"])
 def callback():
     """pass"""
     data = request.get_json()
     print(data)
-    try:
-        result_code = data["Body"]["stkCallback"]["ResultCode"]
-        result_desc = data["Body"]["stkCallback"]["ResultDesc"]
+
+    callback_data = data["Body"]["stkCallback"]
+    result_code = callback_data["ResultCode"]
+    result_desc = callback_data["ResultDesc"]
+    checkout_id = callback_data["CheckoutRequestID"]
+
+    if checkout_id in transactions:
         if result_code == 0:
-            session["mpesa_message"] = "Payment successful!"
-            session["mpesa_status"] = "success"
+            transactions[checkout_id]["message"] = "Payment successful!"
+            transactions[checkout_id]["status"] = "success"
         else:
-            session["mpesa_message"] = f"Payment failed: {result_desc}"
-            session["mpesa_status"] = "failed"
-    except (KeyError, TypeError, ValueError):
-        session["mpesa_message"] = "Error processing payment callback."
-        session["mpesa_status"] = "failed"
+            transactions[checkout_id]["message"] = f"Payment failed: {result_desc}"
+            transactions[checkout_id]["status"] = "failed"
+    
     return "OK", 200
 
 @app.route('/payment_status')
 def payment_status():
     """pass"""
-    status = session.get("mpesa_status")
-    message = session.get("mpesa_message")
-    return {"status": status, "message": message}
+    checkout_id = session.get("checkout_id")
+
+    if not checkout_id:
+        return {"status": None, "message": "No transaction found."}
+    
+    tx = transactions.get(checkout_id, {"status": "unknown", "message": "No update yet."})
+    return {"status": tx["status"], "message": tx["message"]}
 
 if __name__ == '__main__':
     app.run(debug=True)

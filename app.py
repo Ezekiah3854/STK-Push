@@ -2,13 +2,17 @@ import os
 import base64
 from datetime import datetime
 from flask import Flask, request, render_template, redirect, url_for, session
+from flask_session import Session
 import requests
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv("FLASK_SECRET_KEY", "changeme")  # Needed for session
+
+app.config['SESSION_PARMANENT'] = False
+app.config['SESSION_TYPE'] = 'filesystem'
+Session(app)
 
 def get_access_token():
     """pass"""
@@ -64,9 +68,9 @@ def pay():
     resp = initiate_payment(phone_no, amount)
     print(resp)
 
-    mpesa_message = "Payment initiated. Check your phone."
-    mpesa_status = "pending"
-    return render_template("afterpay.html", message=mpesa_message, status=mpesa_status)
+    session["mpesa_message"] = "Payment initiated. Check your phone."
+    session["mpesa_status"] = "pending"
+    return render_template("afterpay.html", message=session["mpesa_message"], status=session["mpesa_status"])
 
 @app.route('/afterpay')
 def afterpay():
@@ -94,8 +98,9 @@ def callback():
 
 @app.route('/payment_status')
 def payment_status():
-    status = session.get("mpesa_status", "pending")
-    message = session.get("mpesa_message", "Waiting for payment confirmation...")
+    """pass"""
+    status = session.get("mpesa_status")
+    message = session.get("mpesa_message")
     return {"status": status, "message": message}
 
 if __name__ == '__main__':

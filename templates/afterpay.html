@@ -7,9 +7,9 @@
         <div class="card w-full max-w-xl p-5 shadow-2xl bg-blue-100">
             <div id="status-icon" class="flex justify-center items-center h-24">
                 {% if status == "pending" %}
-                <div class="text-black font-bold text-3xl">
-                    <span class="loading loading-bars loading-2xl"></span>
-                    <span class="mb-2">Processing...</span>
+                <div class="fl text-black font-bold text-3xl">
+                    <div class="loading loading-bars loading-2xl w-10"></div>
+                    <p class="mt-6">Processing...</p>
                 </div>
                 {% elif status == "success" %}
                 <span class="text-green-600 text-3xl font-bold">&#10003;</span>

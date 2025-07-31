@@ -67,7 +67,7 @@ def pay():
     # Save the CheckoutRequestID in session if you want to track it
     mpesa_message = "Payment initiated. Check your phone."
     mpesa_status = "pending"
-    return redirect(url_for("afterpay"), message=mpesa_message, status=mpesa_status)
+    return redirect(url_for("afterpay", message=mpesa_message, status=mpesa_status))
 
 @app.route('/afterpay')
 def afterpay():

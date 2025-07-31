@@ -1,7 +1,7 @@
 import os
 import base64
 from datetime import datetime
-from flask import Flask, request, render_template, redirect, url_for, session
+from flask import Flask, request, render_template, session
 from flask_session import Session
 import requests
 from dotenv import load_dotenv
@@ -76,7 +76,7 @@ def pay():
         transactions[checkout_id] = {"status": "pending", "message": "Waiting for the payment results."}
         session["checkout_id"] = checkout_id
 
-    return render_template("afterpay.html", status="pending", message="Payment initiated, check your phone.")
+    return render_template("afterpay.html", status="pending", message="Payment initiated, check your phone...")
 
 @app.route('/callback', methods=["POST"])
 def callback():

@@ -19,7 +19,8 @@
                 <div class="card-body space-y-4 text-black">
                     <p id="status-message" class="text-lg">{{ message }}</p>
                 </div>
-                <button class="btn btn-soft btn-success">Start another transaction</button>
+                <div>
+                <button id="next-transaction" class="btn btn-soft btn-success"></button>
 
                 {% elif status == "failed" %}
                 <span id="status-icon" class="text-red-600 text-3xl font-bold">&#10007;</span>
@@ -27,8 +28,7 @@
                     <p id="status-message" class="text-lg">{{ message }}</p>
                 </div>
                 <div>
-                    <a style="color: blue; text-decoration: underline;">Retry the transaction</a>
-                </div>
+                <div id="retry-transaction-link"></div>
                 {% endif %}
             </div>
         </div>
@@ -45,15 +45,18 @@
                     currentStatus = data.status;
                     const iconDiv = document.getElementById("status-icon");
                     const msgP = document.getElementById("status-message");
+                    const next_transaction = document.getElementById("next-transaction");
+                    const retryLink = document.getElementById("retry-transaction-link");
                     if (currentStatus === "pending") {
                         iconDiv.innerHTML = '<span class="loading loading-bars loading-2xl"></span>';
                     } else if (currentStatus === "success") {
                         iconDiv.innerHTML = '<span class="text-green-600 text-3xl font-bold">&#10003;</span>';
+                        next_transaction.textContent = "Start another transaction";
                     } else if (currentStatus === "failed") {
                         iconDiv.innerHTML = '<span class="text-red-600 text-3xl font-bold">&#10007;</span>';
+                        retryLink.innerHTML = '<a href="/" style="color: blue; text-decoration: underline;">Retry the transaction</a>'
                     }
                     msgP.textContent = data.message;
-                    console.log(data.message);
                 }
                 if (currentStatus === "pending") {
                     setTimeout(updateStatus, 2000);

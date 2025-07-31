@@ -76,7 +76,7 @@ def afterpay():
     status = session.get("mpesa_status", "pending")
     return render_template('afterpay.html', message=message, status=status)
 
-@app.route('/callback', methods=["POST"])
+@app.route('/callback', methods=["GET", "POST", "PUT", "DELETE"])
 def callback():
     """pass"""
     data = request.get_json()

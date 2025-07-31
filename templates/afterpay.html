@@ -19,9 +19,145 @@
             </div>
             <div class="card-body space-y-4 text-black">
                 <p id="status-message" class="text-lg">{{ message }}</p>
+                
+                <!-- Transaction details section (hidden by default) -->
+                <div id="transaction-details" class="hidden mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                    <h3 class="font-bold text-green-800 mb-2">Transaction Details:</h3>
+                    <div id="transaction-info" class="text-sm text-green-700"></div>
+                </div>
+                
+                <!-- Back to home button (shown after completion) -->
+                <div id="back-button" class="hidden mt-6">
+                    <a href="{{ url_for('home') }}" class="btn btn-primary">Back to Home</a>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+let statusInterval;
+let pollCount = 0;
+const maxPolls = 100; // Stop after 5 minutes (100 polls * 3 seconds)
+
+function updateStatusIcon(status) {
+    const statusIcon = document.getElementById('status-icon');
+    
+    if (status === 'pending') {
+        statusIcon.innerHTML = `
+            <div class="text-black font-bold text-3xl">
+                <span class="loading loading-bars loading-2xl"></span>
+                <span class="mb-2">Processing...</span>
+            </div>
+        `;
+    } else if (status === 'success') {
+        statusIcon.innerHTML = `
+            <span class="text-green-600 text-3xl font-bold">&#10003;</span>
+        `;
+    } else if (status === 'failed') {
+        statusIcon.innerHTML = `
+            <span class="text-red-600 text-3xl font-bold">&#10007;</span>
+        `;
+    }
+}
+
+function showTransactionDetails(details) {
+    if (details && Object.keys(details).length > 0) {
+        const detailsDiv = document.getElementById('transaction-details');
+        const infoDiv = document.getElementById('transaction-info');
+        
+        let detailsHTML = '';
+        
+        // Format common transaction details
+        if (details.Amount) {
+            detailsHTML += `<p><strong>Amount:</strong> KSh ${details.Amount}</p>`;
+        }
+        if (details.MpesaReceiptNumber) {
+            detailsHTML += `<p><strong>Receipt Number:</strong> ${details.MpesaReceiptNumber}</p>`;
+        }
+        if (details.TransactionDate) {
+            detailsHTML += `<p><strong>Date:</strong> ${details.TransactionDate}</p>`;
+        }
+        if (details.PhoneNumber) {
+            detailsHTML += `<p><strong>Phone:</strong> ${details.PhoneNumber}</p>`;
+        }
+        
+        // Add any other details
+        for (const [key, value] of Object.entries(details)) {
+            if (!['Amount', 'MpesaReceiptNumber', 'TransactionDate', 'PhoneNumber'].includes(key)) {
+                detailsHTML += `<p><strong>${key}:</strong> ${value}</p>`;
+            }
+        }
+        
+        infoDiv.innerHTML = detailsHTML;
+        detailsDiv.classList.remove('hidden');
+    }
+}
+
+function checkPaymentStatus() {
+    pollCount++;
+    
+    fetch('/payment_status')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Payment status:', data);
+            
+            // Update the message
+            document.getElementById('status-message').innerText = data.message;
+            
+            // Update the status icon
+            updateStatusIcon(data.status);
+            
+            // If payment is complete (success or failed)
+            if (data.status !== 'pending') {
+                clearInterval(statusInterval);
+                
+                // Show transaction details if successful
+                if (data.status === 'success' && data.transaction_details) {
+                    showTransactionDetails(data.transaction_details);
+                }
+                
+                // Show back button
+                document.getElementById('back-button').classList.remove('hidden');
+                
+                console.log('Payment completed with status:', data.status);
+            }
+            
+            // Stop polling if we've reached max polls
+            if (pollCount >= maxPolls) {
+                clearInterval(statusInterval);
+                console.log('Stopped polling after maximum attempts');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking payment status:', error);
+            
+            // Stop polling on repeated errors
+            if (pollCount > 10) {
+                clearInterval(statusInterval);
+                document.getElementById('status-message').innerText = 'Error checking payment status. Please refresh the page.';
+            }
+        });
+}
+
+// Start polling only if status is pending
+if ('{{ status }}' === 'pending') {
+    console.log('Starting payment status polling...');
+    statusInterval = setInterval(checkPaymentStatus, 3000); // Poll every 3 seconds
+    
+    // Also check immediately
+    checkPaymentStatus();
+} else {
+    // If not pending, show the back button immediately
+    document.getElementById('back-button').classList.remove('hidden');
+}
+
+// Clean up interval when page is closed/refreshed
+window.addEventListener('beforeunload', function() {
+    if (statusInterval) {
+        clearInterval(statusInterval);
+    }
+});
+</script>
 
 {% endblock %}

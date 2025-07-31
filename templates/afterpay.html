@@ -9,6 +9,7 @@
                 {% if status == "pending" %}
                 <div class="text-black font-bold text-3xl">
                     <span class="loading loading-bars loading-2xl"></span>
+                    <span class="mb-2">Processing...</span>
                 </div>
                 {% elif status == "success" %}
                 <span class="text-green-600 text-3xl font-bold">&#10003;</span>
@@ -22,33 +23,5 @@
         </div>
     </div>
 </div>
-<script>
-    let currentStatus = "{{ status }}";
-    function updateStatus() {
-        fetch("/payment_status")
-            .then(res => res.json())
-            .then(data => {
-                if (data.status !== currentStatus) {
-                    currentStatus = data.status;
-                    const iconDiv = document.getElementById("status-icon");
-                    const msgP = document.getElementById("status-message");
-                    if (currentStatus === "pending") {
-                        iconDiv.innerHTML = '<span class="loading loading-bars loading-2xl"></span>';
-                    } else if (currentStatus === "success") {
-                        iconDiv.innerHTML = '<span class="text-green-600 text-3xl font-bold">&#10003;</span>';
-                    } else if (currentStatus === "failed") {
-                        iconDiv.innerHTML = '<span class="text-red-600 text-3xl font-bold">&#10007;</span>';
-                    }
-                    msgP.textContent = data.message;
-                    console.log(data)
-                }
-                if (currentStatus === "pending") {
-                    setTimeout(updateStatus, 2000);
-                }
-            });
-    }
-    if (currentStatus === "pending") {
-        setTimeout(updateStatus, 2000);
-    }
-</script>
+
 {% endblock %}

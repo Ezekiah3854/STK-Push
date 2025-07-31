@@ -53,8 +53,8 @@ def initiate_payment(phone_no, amount):
 @app.route('/', methods=["GET"])
 def home():
     """pass"""
-    message = session.pop("mpesa_message", None)
-    status = session.pop("mpesa_status", None)
+    message = "mpesa_message"
+    status = "mpesa_status"
     return render_template('index.html', message=message, status=status)
 
 @app.route('/api/pay', methods=["POST"])
@@ -65,15 +65,15 @@ def pay():
     resp = initiate_payment(phone_no, amount)
     print(resp)  # For debugging purposes
     # Save the CheckoutRequestID in session if you want to track it
-    session["mpesa_message"] = resp.get("CustomerMessage", "Payment initiated. Check your phone.")
-    session["mpesa_status"] = "pending"
-    return redirect(url_for("afterpay"))
+    mpesa_message = "Payment initiated. Check your phone."
+    mpesa_status = "pending"
+    return redirect(url_for("afterpay"), message=mpesa_message, status=mpesa_status)
 
 @app.route('/afterpay')
 def afterpay():
     """pass"""
-    message = session.get("mpesa_message", "Waiting for payment confirmation...")
-    status = session.get("mpesa_status", "pending")
+    message = "Waiting for payment confirmation..."
+    status = "pending"
     return render_template('afterpay.html', message=message, status=status)
 
 @app.route('/callback', methods=["GET", "POST", "PUT", "DELETE"])
@@ -85,22 +85,16 @@ def callback():
         result_code = data["Body"]["stkCallback"]["ResultCode"]
         result_desc = data["Body"]["stkCallback"]["ResultDesc"]
         if result_code == 0:
-            session["mpesa_message"] = "Payment successful!"
-            session["mpesa_status"] = "success"
+            mpesa_message = "Payment successful!"
+            mpesa_status = "success"
         else:
-            session["mpesa_message"] = f"Payment failed: {result_desc}"
-            session["mpesa_status"] = "failed"
+            mpesa_message = f"Payment failed: {result_desc}"
+            mpesa_status = "failed"
     except (KeyError, TypeError, ValueError):
-        session["mpesa_message"] = "Error processing payment callback."
-        session["mpesa_status"] = "failed"
-    return "OK", 200
+        mpesa_message = "Error processing payment callback."
+        mpesa_status = "failed"
+    return redirect(url_for("afterpay", message=mpesa_message, status=mpesa_status))
 
-@app.route('/payment_status')
-def payment_status():
-    """pass"""
-    status = session.get("mpesa_status", "pending")
-    message = session.get("mpesa_message", "Waiting for payment confirmation...")
-    return {"status": status, "message": message}
 
 if __name__ == '__main__':
     app.run(debug=True)

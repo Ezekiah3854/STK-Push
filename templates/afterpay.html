@@ -39,11 +39,11 @@
 
 <script>
     let currentStatus = "{{ status }}";
-    function updateStatus() {
+    function updateStatus(forceUpdate = false) {
         fetch("/payment_status")
             .then(res => res.json())
             .then(data => {
-                if (data.status !== currentStatus) {
+                if (data.status !== currentStatus || forceUpdate) {
                     currentStatus = data.status;
                     const iconDiv = document.getElementById("status-icon");
                     const msgP = document.getElementById("status-message");
@@ -52,13 +52,17 @@
                     if (currentStatus === "pending") {
                         iconDiv.innerHTML = '<span class="loading loading-bars loading-2xl"></span>';
                         msgP.textContent = data.message;
+                        nextTransactionDiv.innerHTML = '';
+                        retryLinkDiv.innerHTML = '';
                     } else if (currentStatus === "success") {
                         iconDiv.innerHTML = '<span class="text-green-600 text-3xl font-bold">&#10003;</span>';
                         msgP.textContent = data.message;
                         nextTransactionDiv.innerHTML = '<button class="btn btn-soft btn-success">Start a new transaction</button>'
+                        retryLinkDiv.innerHTML = '';
                     } else if (currentStatus === "failed") {
                         iconDiv.innerHTML = '<span class="text-red-600 text-3xl font-bold">&#10007;</span>';
                         msgP.textContent = data.message;
+                        nextTransactionDiv.innerHTML = '';
                         retryLinkDiv.innerHTML = '<a href="/" style="color: blue; text-decoration: underline;">Retry the transaction</a>'
                     }
                 }
@@ -67,6 +71,7 @@
                 }
             });
     }
+    updateStatus(true);
     if (currentStatus === "pending") {
         setTimeout(updateStatus, 2000);
     }

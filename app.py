@@ -67,14 +67,12 @@ def pay():
     # Save the CheckoutRequestID in session if you want to track it
     mpesa_message = "Payment initiated. Check your phone."
     mpesa_status = "pending"
-    return redirect(url_for("afterpay", message=mpesa_message, status=mpesa_status))
+    return render_template("afterpay.html", message=mpesa_message, status=mpesa_status)
 
 @app.route('/afterpay')
 def afterpay():
     """pass"""
-    message = "Waiting for payment confirmation..."
-    status = "pending"
-    return render_template('afterpay.html', message=message, status=status)
+    return render_template('afterpay.html')
 
 @app.route('/callback', methods=["GET", "POST", "PUT", "DELETE"])
 def callback():

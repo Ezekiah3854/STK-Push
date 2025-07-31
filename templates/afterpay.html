@@ -5,9 +5,9 @@
     <div class="hero-content flex flex-col items-center text-center">
         <h1 class="text-5xl font-bold mb-4">Payment Confirmation</h1>
         <div class="card w-full max-w-xl p-5 shadow-2xl bg-blue-100">
-            <div id="status-icon" class="flex-col justify-center items-center">
+            <div class="flex-col justify-center items-center">
                 {% if status == "pending" %}
-                <div class="text-black font-bold text-3xl">
+                <div id="status-icon" class="text-black font-bold text-3xl">
                     <div class="loading loading-bars loading-2xl w-10"></div>
                     <p class="mt-6">Processing...</p>
                 </div>
@@ -15,14 +15,14 @@
                     <p id="status-message" class="text-lg">{{ message }}</p>
                 </div>
                 {% elif status == "success" %}
-                <span class="text-green-600 text-3xl font-bold">&#10003;</span>
+                <span id="status-icon" class="text-green-600 text-3xl font-bold">&#10003;</span>
                 <div class="card-body space-y-4 text-black">
                     <p id="status-message" class="text-lg">{{ message }}</p>
                 </div>
                 <button class="btn btn-soft btn-success">Start another transaction</button>
 
                 {% elif status == "failed" %}
-                <span class="text-red-600 text-3xl font-bold">&#10007;</span>
+                <span id="status-icon" class="text-red-600 text-3xl font-bold">&#10007;</span>
                 <div class="card-body space-y-4 text-black">
                     <p id="status-message" class="text-lg">{{ message }}</p>
                 </div>
@@ -51,6 +51,7 @@
                         iconDiv.innerHTML = '<span class="text-red-600 text-3xl font-bold">&#10007;</span>';
                     }
                     msgP.textContent = data.message;
+                    console.log(data.message);
                 }
                 if (currentStatus === "pending") {
                     setTimeout(updateStatus, 2000);

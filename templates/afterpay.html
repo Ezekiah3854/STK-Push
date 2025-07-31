@@ -49,14 +49,16 @@
                     const retryLink = document.getElementById("retry-transaction-link");
                     if (currentStatus === "pending") {
                         iconDiv.innerHTML = '<span class="loading loading-bars loading-2xl"></span>';
+                        msgP.textContent = data.message;
                     } else if (currentStatus === "success") {
                         iconDiv.innerHTML = '<span class="text-green-600 text-3xl font-bold">&#10003;</span>';
+                        msgP.textContent = data.message;
                         next_transaction.textContent = "Start another transaction";
                     } else if (currentStatus === "failed") {
                         iconDiv.innerHTML = '<span class="text-red-600 text-3xl font-bold">&#10007;</span>';
+                        msgP.textContent = data.message;
                         retryLink.innerHTML = '<a href="/" style="color: blue; text-decoration: underline;">Retry the transaction</a>'
                     }
-                    msgP.textContent = data.message;
                 }
                 if (currentStatus === "pending") {
                     setTimeout(updateStatus, 2000);

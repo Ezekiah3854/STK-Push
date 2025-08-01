@@ -61,11 +61,11 @@
                     } else if (currentStatus === "success") {
                         iconDiv.innerHTML = '<span class="text-green-600 text-3xl font-bold">&#10003;</span>';
                         msgP.textContent = data.message;
-                        nextTransactionDiv.innerHTML = '<button class="btn btn-soft btn-success">Start a new transaction</button>'
+                        nextTransactionDiv.innerHTML = `<button class="btn btn-soft btn-success"><a href="{{ url_for('home') }}">Start a new transaction</a></button>`
                     } else if (currentStatus === "failed") {
                         iconDiv.innerHTML = '<span class="text-red-600 text-3xl font-bold">&#10007;</span>';
                         msgP.textContent = data.message;
-                        retryLinkDiv.innerHTML = '<a href="/" style="color: blue; text-decoration: underline;">Retry the transaction</a>'
+                        retryLinkDiv.innerHTML = `<a href="{{ url_for('home') }}" style="color: blue; text-decoration: underline;">Retry the transaction</a>`
                     }
                 }
                 if (currentStatus === "pending") {
